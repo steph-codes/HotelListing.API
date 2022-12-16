@@ -2,11 +2,8 @@
 
 namespace HotelListing.API.Models.Country
 {
-    public class createCountryDto
+    public class createCountryDto : BaseCountryDto
     {
-        [Required]
-        public string Name { get; set; }
-        [Required]
-        public string ShortName { get; set; }
+         
     }
 }

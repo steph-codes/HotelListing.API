@@ -69,15 +69,24 @@ namespace HotelListing.API.Controllers
         // PUT: api/Countries/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCountry(int id, Country country)
+        public async Task<IActionResult> PutCountry(int id, updateCountryDto updateCountryDto)
         {
-            if (id != country.Id)
+            if (id != updateCountryDto.Id)
             {
                 //400
                 return BadRequest();
             }
 
-            _context.Entry(country).State = EntityState.Modified;
+            //_context.Entry(updateCountryDto).State = EntityState.Modified;
+            var country = await _context.Countries.FindAsync(id);
+
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            //entity framework tracks it here where the mapping is done not need foe state.Modified here
+            _mapper.Map(updateCountryDto, country);
 
             try
             {
@@ -95,7 +104,8 @@ namespace HotelListing.API.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(updateCountryDto);
+            //return NoContent();
         }
 
         // POST: api/Countries
