@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using HotelListing.API.Data;
 using HotelListing.API.Models.Country;
 using AutoMapper;
+using HotelListing.API.Models;
 
 namespace HotelListing.API.Controllers
 {
@@ -24,26 +25,45 @@ namespace HotelListing.API.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/Countries
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Country>>> GetCountries()
+        // GET: api/Countries 
+
+        //this is similar to post for but for Get request many countriesDto should be returned from a list
+        //List of CountryDto since we are rendering with Dto, the listy shld
+        //be wrapped in the Dto 
+        //mapping a collection to the countries
+
+        public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
             var countries = await _context.Countries.ToListAsync();
-            return Ok(countries);
+            var records = _mapper.Map<List<GetCountryDto>>(countries);
+            return Ok(records);
         }
 
         // GET: api/Countries/5
+
+        //one country not a list, so the mapping is 1 to 1
+        //1countryDto maps to one object, but the object has to contain the full details of the country we are getting
+        //it will contain the list of hotels in that particular country as well.
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<Country>> GetCountry(int id)
+        public async Task<ActionResult<CountryDto>> GetCountry(int id)
         {
-            var country = await _context.Countries.FindAsync(id);
+            //gets just country alone 
+            //var Onlycountry = await _context.Countries.FindAsync(id);
+
+            //gets country and include hotels as well as one record
+            var country = await _context.Countries.Include(q => q.Hotels)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
 
             if (country == null)
             {
                 return NotFound();
             }
 
-            return country;
+            var countryDto = _mapper.Map<CountryDto>(country);
+
+            return Ok(countryDto);
         }
 
         // PUT: api/Countries/5

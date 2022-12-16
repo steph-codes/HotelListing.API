@@ -8,7 +8,6 @@ namespace HotelListing.API.Data
         public string Name { get; set; }
         public string ShortName { get; set; }
         //many hotels one country
-        [JsonIgnore]
         public virtual IList<Hotel> Hotels { get; set; }
     }
 }
