@@ -1,4 +1,6 @@
-﻿namespace HotelListing.API.Data
+﻿using System.Text.Json.Serialization;
+
+namespace HotelListing.API.Data
 {
     public class Country
     {
@@ -6,6 +8,7 @@
         public string Name { get; set; }
         public string ShortName { get; set; }
         //many hotels one country
+        [JsonIgnore]
         public virtual IList<Hotel> Hotels { get; set; }
     }
 }
