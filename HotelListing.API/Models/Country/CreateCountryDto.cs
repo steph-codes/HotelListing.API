@@ -2,7 +2,7 @@
 
 namespace HotelListing.API.Models.Country
 {
-    public class CreateCountryDto
+    public class createCountryDto
     {
         [Required]
         public string Name { get; set; }
