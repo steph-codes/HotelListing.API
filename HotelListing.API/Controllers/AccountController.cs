@@ -52,15 +52,16 @@ namespace HotelListing.API.Controllers
 
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
-            // isvalid User returns true or false and its expected to return true
-            var isValidUser = await _authManager.Login(loginDto);
+            
+            //auth response returns userId and Token as an object;
+            var authResponse = await _authManager.Login(loginDto);
 
-            if (!isValidUser)
+            if (authResponse == null)
             {
                 //401 not authenticated or 403 means forbidden not authorized
                 return Unauthorized();
             }
-            return Ok();
+            return Ok(authResponse);
 
         }
 
