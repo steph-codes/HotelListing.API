@@ -2,7 +2,7 @@
 {
     public class NotFoundException : ApplicationException
     {
-        public NotFoundException(string name, object Key) : base(name)
+        public NotFoundException(string name, object Key) : base($"{name} ({Key}) was not Found")
         {
             
         }
