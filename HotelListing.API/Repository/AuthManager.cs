@@ -18,6 +18,9 @@ namespace HotelListing.API.Repository
         private readonly IConfiguration _configuration;
         private ApiUser _user;
 
+        private const string _loginProvider = "HotelListingApi";
+        private const string _refreshToken = "RefreshToken";
+
         public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration)
         {
             _mapper = mapper;
@@ -27,7 +30,11 @@ namespace HotelListing.API.Repository
 
         public async Task<string> CreateRefreshToken()
         {
-            await 
+            //Looks at the Token Field on Identity Table then remove old token from db and then add new token, this disrupts the new Token creation everytime 
+            await _userManager.RemoveAuthenticationTokenAsync(_user, _loginProvider, _refreshToken);
+            var newRefreshToken = await _userManager.GenerateUserTokenAsync(_user, _loginProvider, _refreshToken);
+            var result = await _userManager.SetAuthenticationTokenAsync(_user, _loginProvider, _refreshToken, newRefreshToken);
+            return newRefreshToken;
         }
         public async Task<AuthResponseDto> Login(LoginDto loginDto)
         {
@@ -48,6 +55,7 @@ namespace HotelListing.API.Repository
             {
                 Token = token,
                 UserId = _user.Id
+                //RefreshToken = await CreateRefreshToken()
             };
             
             
@@ -75,6 +83,37 @@ namespace HotelListing.API.Repository
             return result.Errors;
         }
 
+        //public async Task<AuthResponseDto> VerifyRefreshToken(AuthResponseDto request)
+        //{
+        //    var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        //    var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
+        //    var username = tokenContent.Claims.ToList().FirstOrDefault(q => q.Type == JwtRegisteredClaimNames.Email)?.Value;
+        //    _user = await _userManager.FindByNameAsync(username);
+
+        //    if (_user == null || _user.Id != request.UserId)
+        //    {
+        //        return null;
+        //    }
+
+        //    var isValidRefreshToken = await _userManager.VerifyUserTokenAsync(_user, _loginProvider, _refreshToken, request.RefreshToken);
+
+        //    if (isValidRefreshToken)
+        //    {
+        //        var token = await GenerateToken(_user);
+        //        return new AuthResponseDto
+        //        {
+        //            Token = token,
+        //            UserId = _user.Id,
+        //            RefreshToken = await CreateRefreshToken()
+        //        };
+        //    }
+
+
+        //    //if token is valid
+        //    await _userManager.UpdateSecurityStampAsync(_user);
+        //}
+
+        // private async Task<string> GenerateToken(ApiUser _user) no need to pass ApiUser parameter cos of repition as its already declared at the top
         private async Task<string> GenerateToken(ApiUser _user)
         {
             //instead of using builder u inject the configurations service into this

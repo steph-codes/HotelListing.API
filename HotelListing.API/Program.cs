@@ -19,10 +19,13 @@ builder.Services.AddDbContext<HotelListingDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+
 //use Identity user data type or whatever is inheriting from identity user its this case it ApiUser
 
 builder.Services.AddIdentityCore<ApiUser>()
     .AddRoles<IdentityRole>()
+   // .AddTokenProvider<DataProtectorTokenProvider<ApiUser>>("HotelListingApi")
+   .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<HotelListingDbContext>();
 
 
