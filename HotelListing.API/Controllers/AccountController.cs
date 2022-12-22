@@ -10,10 +10,12 @@ namespace HotelListing.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthManager _authManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IAuthManager authManager)
+        public AccountController(IAuthManager authManager, ILogger<AccountController> logger)
         {
             this._authManager = authManager;
+            this._logger = logger;
         }
 
         //  api/account/register
@@ -25,20 +27,38 @@ namespace HotelListing.API.Controllers
 
         public async Task<ActionResult> Register([FromBody] ApiUserDto apiUserDto)
         {
-            //registration is done in the authManager service
-            var errors = await _authManager.Register(apiUserDto);
 
-            if (errors.Any())
+            _logger.LogInformation($"Registration attempt for {apiUserDto.Email}");
+
+            //warp all in try catch block
+            try
             {
-                //model state is the body that is sent as a param
-                foreach (var error in errors)
+
+
+                //registration is done in the authManager service
+                var errors = await _authManager.Register(apiUserDto);
+
+                if (errors.Any())
                 {
-                    //code is related error field, string Error message both coming from IdentityError return Object
-                    ModelState.AddModelError(error.Code, error.Description);
+                    //model state is the body that is sent as a param
+                    foreach (var error in errors)
+                    {
+                        //code is related error field, string Error message both coming from IdentityError return Object
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return BadRequest(ModelState);
                 }
-                return BadRequest(ModelState);
+                return Ok(apiUserDto);
+
             }
-            return Ok(apiUserDto);
+            catch (Exception ex)
+            {
+                //{nameof(Register)} is th name of the method error came from
+                _logger.LogError(ex, $"Something Went Wrong in the {nameof(Register)} - User Registration attempt for {apiUserDto.Email}");
+                return Problem($"Something went Wrong in the {nameof(Register)} . Please Contact Support. ", statusCode: 500);
+                
+
+            }
             
         }
 
@@ -52,16 +72,26 @@ namespace HotelListing.API.Controllers
 
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
-            
-            //auth response returns userId and Token as an object;
-            var authResponse = await _authManager.Login(loginDto);
+            _logger.LogInformation($"Login Attempt for {loginDto.Email} ");
 
-            if (authResponse == null)
+            try
             {
-                //401 not authenticated or 403 means forbidden not authorized
-                return Unauthorized();
+                //auth response returns userId and Token as an object;
+                var authResponse = await _authManager.Login(loginDto);
+
+                if (authResponse == null)
+                {
+                    //401 not authenticated or 403 means forbidden not authorized
+                    return Unauthorized();
+                }
+                return Ok(authResponse);
             }
-            return Ok(authResponse);
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Something Went Wrong in the {nameof(Login)}");
+                return Problem($"Something Went Wrong in the {nameof(Login)}"), statusCode: 500);
+
+            }
 
         }
 
