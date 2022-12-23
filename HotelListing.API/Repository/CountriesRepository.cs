@@ -1,4 +1,5 @@
-﻿using HotelListing.API.Contracts;
+﻿using AutoMapper;
+using HotelListing.API.Contracts;
 using HotelListing.API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,8 @@ namespace HotelListing.API.Repository
     {
         private readonly HotelListingDbContext _context;
 
-        public CountriesRepository(HotelListingDbContext context) : base(context)
+        //injecting Mapper because we use it in the Generic we initially dont need it here
+        public CountriesRepository(HotelListingDbContext context, IMapper mapper) : base(context, mapper)
         {
             this._context = context;
         }

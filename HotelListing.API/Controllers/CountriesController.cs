@@ -33,8 +33,9 @@ namespace HotelListing.API.Controllers
             this._logger = logger;
         }
 
-        // GET: api/Countries 
+        // GET: api/Countries
 
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
@@ -42,6 +43,18 @@ namespace HotelListing.API.Controllers
             var records = _mapper.Map<List<GetCountryDto>>(countries);
             return Ok(records);
         }
+
+
+        //testing API Paging
+        // GET: api/Countries /?StartIndex=0&pageSize=25&pageNumber=1  //We can refactor it for GetDetails and other fetching Endpoints
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<PagedResult<GetCountryDto>>> GetPagedCountries([FromQuery] QueryParameters queryParameters)
+        {
+            var pagedCountriesResult = await _countriesRepository.GetAllAsync<GetCountryDto>(queryParameters);
+           //already mapped in the generic
+            return Ok(pagedCountriesResult);
+        }
+
         //GET :api/Coutries/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CountryDto>> GetCountry(int id)
