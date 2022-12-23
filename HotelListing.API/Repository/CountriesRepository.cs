@@ -1,0 +1,24 @@
+﻿using AutoMapper;
+using HotelListing.API.Contracts;
+using HotelListing.API.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace HotelListing.API.Repository
+{
+    public class CountriesRepository : GenericRepository<Country>, ICountriesRepository
+    {
+        private readonly HotelListingDbContext _context;
+
+        //injecting Mapper because we use it in the Generic we initially dont need it here
+        public CountriesRepository(HotelListingDbContext context, IMapper mapper) : base(context, mapper)
+        {
+            this._context = context;
+        }
+
+        public async Task<Country> GetDetails(int id)
+        {
+            return await _context.Countries.Include(q => q.Hotels)
+                .FirstOrDefaultAsync(q => q.Id == id);
+        }
+    }
+}
