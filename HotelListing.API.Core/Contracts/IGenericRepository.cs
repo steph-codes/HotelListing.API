@@ -6,13 +6,18 @@ namespace HotelListing.API.Core.Contracts
     {
         //? potential nullable int
         Task<T> GetAsync(int? id);
+        Task<TResult?> GetAsync<TResult>(int? id);
         Task<List<T>> GetAllAsync();
-        Task<T> AddAsync(T entity);
-        Task DeleteAsync(int id);
-        Task UpdateAsync(T entity);
-        Task<bool> Exists(int id);
+        Task<List<TResult>> GetAllAsync<TResult>();
         //for page Implementation
         Task<PagedResult<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters);
+        Task<T> AddAsync(T entity);
+        Task<TResult> AddAsync<TSource, TResult>(TSource source);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(T entity);
+        Task UpdateAsync<TSource>(int id, TSource source);
+        Task<bool> Exists(int id);
+      
 
     }
 }
