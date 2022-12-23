@@ -14,18 +14,18 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HotelListing.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/v{version:apiVersion}/countries")]  //api/v1/countries
     [ApiController]
+    //[ApiVersion("1.0", Deprecated = true)] //means no longer supported or developed
     //[Authorize]
-    [ApiVersion("1.0", Deprecated = true)] //means no longer supported
-    public class CountriesController : ControllerBase
+    public class CountriesNewController : ControllerBase
     {
        
         private readonly IMapper _mapper;
         private readonly ICountriesRepository _countriesRepository;
-        private readonly ILogger<CountriesController> _logger;
+        private readonly ILogger<CountriesNewController> _logger;
 
-        public CountriesController( IMapper mapper, ICountriesRepository countriesRepository, ILogger<CountriesController> logger)
+        public CountriesNewController( IMapper mapper, ICountriesRepository countriesRepository, ILogger<CountriesNewController> logger)
         {
            
             _mapper = mapper;
