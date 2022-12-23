@@ -95,6 +95,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+//add caching
+
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024;    // 1MB of cache data
+    options.UseCaseSensitivePaths = true; //case sensitive
+});
+
 
 
 var app = builder.Build();
@@ -112,6 +120,23 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+//add caching
+app.UseResponseCaching();
+
+
+//add new headersto cache controls and get Fresh data every 10 seconds and then wait next
+app.Use(async (context, next) =>
+{
+    context.Response.GetTypedHeaders().CacheControl =
+        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+        {
+            Public = true,
+            MaxAge = TimeSpan.FromSeconds(10)
+        };
+    context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
+    await next();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
