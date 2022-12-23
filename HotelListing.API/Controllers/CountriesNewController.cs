@@ -11,6 +11,7 @@ using AutoMapper;
 using HotelListing.API.Models;
 using HotelListing.API.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace HotelListing.API.Controllers
 {
@@ -34,8 +35,9 @@ namespace HotelListing.API.Controllers
         }
 
         // GET: api/Countries 
-
+        //Look up Odata Documentation
         [HttpGet]
+        [EnableQuery]  //Anotation is for Filtering with OData use==> $Select as Key and field/Column Name e.g Name as Value on Postman e,g $Select name,ShortName, (it selects those two fields on Postman) 
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
             var countries = await _countriesRepository.GetAllAsync();
