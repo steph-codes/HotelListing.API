@@ -147,12 +147,17 @@ builder.Services.AddControllers().AddOData(options =>
 
 var app = builder.Build();
 
+//mpove the UseSwagger(); outside thebapp.Enviroment.IsDevelopment(
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+
 
 //add middleware from the Middleware
 app.UseMiddleware<ExceptionMiddleware>();
