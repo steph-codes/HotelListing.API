@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HotelListing.API.Data;
-using HotelListing.API.Models.Country;
 using AutoMapper;
-using HotelListing.API.Models;
-using HotelListing.API.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData.Query;
+using HotelListing.API.Core.Contracts;
+using HotelListing.API.Core.Models;
+using HotelListing.API.Core.Models.Country;
 
 namespace HotelListing.API.Controllers
 {
@@ -34,8 +35,9 @@ namespace HotelListing.API.Controllers
         }
 
         // GET: api/Countries 
-
+        //Look up Odata Documentation
         [HttpGet]
+        [EnableQuery]  //Anotation is for Filtering with OData use==> $Select as Key and field/Column Name e.g Name as Value on Postman e,g $Select name,ShortName, (it selects those two fields on Postman) 
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
             var countries = await _countriesRepository.GetAllAsync();
